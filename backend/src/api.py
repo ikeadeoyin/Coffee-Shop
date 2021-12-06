@@ -1,9 +1,9 @@
 import os
-from flask import Flask, request, jsonify, abort
+from flask import Flask, request, jsonify, abort, Response
 # from sqlalchemy import exc
 from flask_sqlalchemy import SQLAlchemy
 import json
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 
 #from .database.models import db_drop_and_create_all, setup_db, Drink
 from .database.models import setup_db, Drink, db_drop_and_create_all
@@ -12,6 +12,14 @@ from .auth.auth import AuthError, requires_auth
 app = Flask(__name__)
 setup_db(app)
 CORS(app)
+
+#cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+# @app.after_request
+# def after_request(response):
+#         response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+#         response.headers.add('Access-Control-Allow-Headers', 'GET, POST, PATCH, DELETE, OPTION')
+#         return response
 
 '''
 @TODO uncomment the following line to initialize the datbase
@@ -55,8 +63,9 @@ def getDrink():
 '''
 
 @app.route('/drinks-detail', methods=['GET' ])
+@cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth('get:drinks-detail')
-def getDrinkDetail():
+def getDrinkDetail(payload):
     drinks = Drink.query.all()
     drink = [drink.long() for drink in drinks]
   
@@ -78,8 +87,9 @@ def getDrinkDetail():
 
 
 @app.route('/drinks', methods=['POST'])
+# @cross_origin(headers=["Content-Type", "Authorization"])
 @requires_auth('post:drinks')
-def create_drink(jwt):
+def create_drink(payload):
     body = request.get_json()
 
     new_title = body.get('title', None)
