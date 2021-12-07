@@ -1,7 +1,12 @@
 venv/
 .vscode/
 __pycache__/
-test.db
+test.
+frontend/node_modules
+node_modules
+frontend/gitignore
+frontend/package-lock.json
+package-lock.json
 
 # OS generated files #
 ######################
